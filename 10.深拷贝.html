@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>deepClone</title>
+  </head>
+  <body>
+    <script>
+      // 处理map/set/循环引用
+      function deepClone(obj, map = new WeakMap()) {
+        if (typeof obj !== "object" || obj == null) return obj;
+        const objFromMap = map.get(obj);
+        if (objFromMap) return objFromMap;
+        let target = {};
+        map.set(obj, target);
+        if (obj instanceof Map) {
+          target = new Map();
+          obj.forEach((v, k) => {
+            const v1 = deepClone(v, map);
+            const k1 = deepClone(k, map);
+            target.set(k1, v1);
+          });
+        }
+        if (obj instanceof Set) {
+          target = new Set();
+          obj.forEach((v) => {
+            const v1 = deepClone(v, map);
+            target.add(v1);
+          });
+        }
+        if (obj instanceof Array) {
+          target = obj.map((item) => deepClone(item, map));
+        }
+        for (const key in obj) {
+          target[key] = deepClone(obj[key], map);
+        }
+        return target;
+      }
+      // test
+      const a = {
+        set: new Set([10, 20, 30]),
+        map: new Map([
+          ["x", 10],
+          ["y", 20],
+        ]),
+        info: {
+          city: "北京",
+        },
+        fn: () => {
+          console.log(100);
+        },
+      };
+      a.self = a;
+      console.log(deepClone(a));
+    </script>
+  </body>
+</html>
