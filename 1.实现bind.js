@@ -1,6 +1,6 @@
 Function.prototype.customBind = function (context, ...args) {
     return (...newArgs) => {
-        this.apply(context, [...args, ...newArgs])
+        return this.apply(context, args.concat(newArgs))
     }
 }
 const test = {
